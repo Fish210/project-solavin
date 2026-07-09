@@ -1,0 +1,31 @@
+{
+  "name": "solavin",
+  "private": true,
+  "version": "3.1.0",
+  "type": "module",
+  "description": "Solavin — a lab-grade photovoltaic current-voltage (I-V) characterization suite. Extracts Isc, Voc, Pmax, FF, Rs, Rsh and efficiency from measured I-V sweeps.",
+  "author": "John Myron Uy",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:standalone": "vite build --config vite.standalone.config.js",
+    "build:all": "npm run build && npm run build:standalone",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "npm run build:standalone && node tests/e2e.smoke.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.12.7",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.8",
+    "vite-plugin-singlefile": "^2.0.2",
+    "vitest": "^2.1.2"
+  }
+}

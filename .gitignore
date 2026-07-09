@@ -1,0 +1,11 @@
+node_modules/
+dist/
+dist-standalone/
+*.local
+.DS_Store
+.vite/
+coverage/
+scratch_*.png
+*.log
+*.timestamp-*.mjs
+desktop.ini

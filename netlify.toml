@@ -1,0 +1,24 @@
+# Netlify deployment configuration for Solavin.
+# Connect this repository in the Netlify dashboard; these settings are applied
+# automatically. The published site is the standard Vite build in dist/.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Single-page app: serve index.html for any route.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Sensible security headers for a static research tool.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
