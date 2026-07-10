@@ -327,6 +327,7 @@ export default function App() {
             </>}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button onClick={() => { setShowWelcome(false); setChatOpen(false); setPage("home"); setTourStep(0); }} title="Replay the guided tour" className="mono" style={{ background: "linear-gradient(135deg," + t.accent + "22," + t.accent2 + "15)", border: "1px solid " + t.accent + "55", borderRadius: 7, padding: "5px 11px", color: t.accent, fontSize: 10.5, fontWeight: 700, letterSpacing: ".04em", lineHeight: "12px", display: "flex", alignItems: "center", gap: 5 }}><Ic.Play s={10} />TOUR</button>
             <button onClick={() => setShowWelcome(true)} title="What is Solavin? Orientation & guided tour" className="mono" style={{ background: t.inputBg, border: "1px solid " + t.border, borderRadius: 7, padding: "5px 10px", color: t.accent, fontSize: 11, fontWeight: 700, lineHeight: "12px" }}>?</button>
             <button onClick={() => setDark(!dark)} title={dark ? "Light mode" : "Dark mode"} style={{ background: t.inputBg, border: "1px solid " + t.border, borderRadius: 7, padding: "5px 9px", color: t.text, fontSize: 10, display: "flex", alignItems: "center", gap: 4 }}>{dark ? <Ic.Sun s={12} /> : <Ic.Moon s={12} />}</button>
             <div style={{ padding: "5px 10px", borderRadius: 7, background: t.inputBg, border: "1px solid " + t.border, fontSize: 10, color: t.text, display: "flex", alignItems: "center", gap: 6 }}>
