@@ -47,9 +47,10 @@ export default function App() {
   const [irradiance, setIrradiance] = useState("");
   const [lookupV, setLookupV] = useState(null);
   const [tourStep, setTourStep] = useState(-1);
-  const [showWelcome, setShowWelcome] = useState(() => {
-    try { return !localStorage.getItem(WELCOME_KEY); } catch { return true; }
-  });
+  const [showWelcome, setShowWelcome] = useState(false);
+  // True while onboarding a fresh account / demo session: closing the Welcome
+  // then auto-launches the guided tour.
+  const [autoTourPending, setAutoTourPending] = useState(false);
   const [importError, setImportError] = useState("");
   const [navPill, setNavPill] = useState(null); // {top, height} of the active nav item, in sidebar-local coords
   const fileRef = useRef(null);
@@ -70,6 +71,15 @@ export default function App() {
         if (restored.length > 0) setDatasets((prev) => prev.concat(restored));
       }
     }
+  }, [session]);
+
+  // Onboarding: pop the Welcome screen for every demo session and for named
+  // operators who haven't finished the tour yet. Closing the Welcome then
+  // auto-starts the guided tour (see closeWelcome).
+  useEffect(() => {
+    if (!session) return;
+    const isNew = session.isGuest || !getUserData(session.id).tourDone;
+    if (isNew) { setShowWelcome(true); setAutoTourPending(true); }
   }, [session]);
 
   // Persist a named operator's uploaded datasets (everything beyond the sample).
@@ -267,6 +277,17 @@ export default function App() {
   function closeWelcome() {
     setShowWelcome(false);
     try { localStorage.setItem(WELCOME_KEY, "1"); } catch { /* private-mode storage — nonfatal */ }
+    // During onboarding, leaving the Welcome flows straight into the tour.
+    if (autoTourPending) { setAutoTourPending(false); setChatOpen(false); setPage("home"); setTourStep(0); }
+  }
+
+  // Explicit "Begin guided tour" from the Welcome — start immediately.
+  function startTour() {
+    setAutoTourPending(false);
+    setShowWelcome(false);
+    setChatOpen(false);
+    setPage("home");
+    setTourStep(0);
   }
 
   if (!session) return <ProfileGate onEnter={setSession} />;
@@ -327,7 +348,7 @@ export default function App() {
             </>}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <button onClick={() => { setShowWelcome(false); setChatOpen(false); setPage("home"); setTourStep(0); }} title="Replay the guided tour" className="mono" style={{ background: "linear-gradient(135deg," + t.accent + "22," + t.accent2 + "15)", border: "1px solid " + t.accent + "55", borderRadius: 7, padding: "5px 11px", color: t.accent, fontSize: 10.5, fontWeight: 700, letterSpacing: ".04em", lineHeight: "12px", display: "flex", alignItems: "center", gap: 5 }}><Ic.Play s={10} />TOUR</button>
+            <button onClick={startTour} title="Replay the guided tour" className="mono" style={{ background: "linear-gradient(135deg," + t.accent + "22," + t.accent2 + "15)", border: "1px solid " + t.accent + "55", borderRadius: 7, padding: "5px 11px", color: t.accent, fontSize: 10.5, fontWeight: 700, letterSpacing: ".04em", lineHeight: "12px", display: "flex", alignItems: "center", gap: 5 }}><Ic.Play s={10} />TOUR</button>
             <button onClick={() => setShowWelcome(true)} title="What is Solavin? Orientation & guided tour" className="mono" style={{ background: t.inputBg, border: "1px solid " + t.border, borderRadius: 7, padding: "5px 10px", color: t.accent, fontSize: 11, fontWeight: 700, lineHeight: "12px" }}>?</button>
             <button onClick={() => setDark(!dark)} title={dark ? "Light mode" : "Dark mode"} style={{ background: t.inputBg, border: "1px solid " + t.border, borderRadius: 7, padding: "5px 9px", color: t.text, fontSize: 10, display: "flex", alignItems: "center", gap: 4 }}>{dark ? <Ic.Sun s={12} /> : <Ic.Moon s={12} />}</button>
             <div style={{ padding: "5px 10px", borderRadius: 7, background: t.inputBg, border: "1px solid " + t.border, fontSize: 10, color: t.text, display: "flex", alignItems: "center", gap: 6 }}>
@@ -624,7 +645,7 @@ export default function App() {
 
       <Assistant open={chatOpen} onClose={() => setChatOpen(false)} datasets={datasets} activeDs={activeDs} allMetrics={allM} efficiency={efficiency} t={t} />
 
-      {showWelcome && <Welcome t={t} onClose={closeWelcome} onStartTour={() => { closeWelcome(); setTourStep(0); }} />}
+      {showWelcome && <Welcome t={t} onClose={closeWelcome} onStartTour={startTour} />}
 
       {tourStep >= 0 && <TourOverlay t={t} step={tourStep} onNext={() => setTourStep(tourStep + 1)} onBack={() => { if (tourStep > 0) setTourStep(tourStep - 1); }} onSkip={dismissTour} onNav={setPage} onVizTab={setVizTab} onChat={() => setChatOpen(true)} onCloseChat={() => setChatOpen(false)} />}
 
