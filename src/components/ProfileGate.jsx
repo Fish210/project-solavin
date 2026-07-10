@@ -59,7 +59,7 @@ export function ProfileGate(props) {
           <span style={{ fontWeight: 700, fontSize: 15, letterSpacing: "-.01em" }}>Solavin</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          <a href="https://github.com/Fish210/solavin" target="_blank" rel="noreferrer" className="mono" style={{ fontSize: 11, color: t.textM, textDecoration: "none", letterSpacing: ".04em" }}>GitHub ↗</a>
+          <a href="https://github.com/Fish210/project-solavin" target="_blank" rel="noreferrer" className="mono" style={{ fontSize: 11, color: t.textM, textDecoration: "none", letterSpacing: ".04em" }}>GitHub ↗</a>
           <button onClick={() => props.onEnter({ id: "guest", name: "Guest", isGuest: true })} className="press" style={{ padding: "11px 22px", borderRadius: 10, border: "1px solid rgba(255,255,255,.22)", background: GRAD, color: "#04140d", fontSize: 13, fontWeight: 800, letterSpacing: ".01em", boxShadow: "0 8px 24px rgba(34,211,238,.4)", display: "inline-flex", alignItems: "center", gap: 8, animation: "glowPulse 2.2s ease-in-out infinite" }}><span style={{ width: 7, height: 7, borderRadius: 4, background: "#04140d", animation: "pulsedot 1.5s ease infinite" }} />Try the live demo<span style={{ fontSize: 11 }}>→</span></button>
         </div>
       </nav>
