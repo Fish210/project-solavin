@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Fragment } from "react";
+import { useState, useEffect, Fragment } from "react";
 
 export const TOUR_STEPS = [
   { kicker: "00 / ORIENTATION", title: "Welcome to Solavin", desc: "A university-grade workbench for photovoltaic I-V characterization. The next minute walks you through every panel — uploads, sweeps, parameter extraction, and the lab assistant.", nav: null, vizT: null, chat: false, pos: "center", labels: [] },
@@ -15,33 +15,27 @@ export const TOUR_STEPS = [
 export function TourOverlay(p) {
   const t = p.t;
   const step = TOUR_STEPS[p.step];
-  const [fade, setFade] = useState(true);
+  const [fade, setFade] = useState(false);
   const [anchors, setAnchors] = useState([]);
-  const prevStep = useRef(p.step);
 
-  useEffect(() => {
-    if (p.step !== prevStep.current) {
-      setFade(false);
-      setTimeout(() => {
-        const s = TOUR_STEPS[p.step];
-        if (!s) return;
-        if (s.nav) p.onNav(s.nav);
-        if (s.vizT) p.onVizTab(s.vizT);
-        if (s.chat) p.onChat(); else p.onCloseChat();
-        setTimeout(() => setFade(true), 80);
-      }, 200);
-      prevStep.current = p.step;
-    }
-  }, [p.step]);
-
+  // Drive navigation + the crossfade for EVERY step, including the first mount.
+  // A single effect (with cleanup that cancels its pending timers) replaces the
+  // previous two-effect + prevStep-ref approach, which under React StrictMode
+  // could double-fire, orphan its fade timers and leave the panel stuck hidden
+  // or skip the page/tab navigation for a step.
   useEffect(() => {
     const s = TOUR_STEPS[p.step];
     if (!s) return;
-    if (s.nav) p.onNav(s.nav);
-    if (s.vizT) p.onVizTab(s.vizT);
-    if (s.chat) p.onChat();
-    setFade(true);
-  }, []);
+    setFade(false);
+    let inner;
+    const navTimer = setTimeout(() => {
+      if (s.nav) p.onNav(s.nav);
+      if (s.vizT) p.onVizTab(s.vizT);
+      if (s.chat) p.onChat(); else p.onCloseChat();
+      inner = setTimeout(() => setFade(true), 80);
+    }, 200);
+    return () => { clearTimeout(navTimer); clearTimeout(inner); };
+  }, [p.step]);
 
   useEffect(() => {
     if (!fade) { setAnchors([]); return; }
